@@ -15,7 +15,7 @@ async function cargarChats() {
 
     cont.innerHTML = ''; // Limpiar contenedor
 
-    chats.forEach(chat => {
+    for (const chat of chats) {
       const fecha = new Date(chat.createdAt);
       const fechaStr = fecha.toLocaleString('es-MX', {
         year: 'numeric',
@@ -25,17 +25,40 @@ async function cargarChats() {
         minute: '2-digit'
       });
 
+      // Obtener el primer mensaje de usuario para preview
+      let preview = 'Chat nuevo';
+      try {
+        const resMsg = await fetch(`/api/chats/${chat._id}/messages`);
+        if (resMsg.ok) {
+          const messages = await resMsg.json();
+          const firstUserMsg = messages.find(m => m.from === 'user');
+          if (firstUserMsg && firstUserMsg.text) {
+            preview = firstUserMsg.text;
+          }
+        }
+      } catch {
+        // ignore error, preview queda como "Chat nuevo"
+      }
+
+      // Crear el botón
       const chatBtn = document.createElement('button');
-      chatBtn.textContent = `${chat.title} - ${fechaStr}`;
-      chatBtn.className = 'w-full text-left bg-gray-700 hover:bg-gray-600 p-3 rounded shadow text-gray-200';
+      chatBtn.className = `
+        w-full text-left bg-gray-700 hover:bg-gray-600 p-3 rounded shadow text-gray-200
+        flex flex-col
+      `;
+
+      // Estructura con preview y fecha separados
+      chatBtn.innerHTML = `
+        <p class="text-sm text-gray-300 truncate" title="${preview}">${preview}</p>
+        <p class="text-xs text-gray-400 mt-1">${fechaStr}</p>
+      `;
 
       chatBtn.addEventListener('click', () => {
-        // En lugar de usar localStorage, pasamos el chatId en la URL
         window.location.href = `/?chatId=${chat._id}`;
       });
 
       cont.appendChild(chatBtn);
-    });
+    }
   } catch (error) {
     cont.innerHTML = `<p class="text-red-500">Error cargando chats: ${error.message}</p>`;
   }
