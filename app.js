@@ -57,9 +57,14 @@ io.on('connection', (socket) => {
   socket.currentChatId = null;
   let chatStarted = false;
 
-  // Crear un nuevo chat
+  // Crear un nuevo chat (solo si se pide explícitamente)
   async function createNewChat(title = 'Chat nuevo') {
-    const newChat = new Chat({ title });
+    if (socket.currentChatId) {
+      return;
+    }
+
+    // ⚠️ Importante: Inicializar el array de mensajes vacío
+    const newChat = new Chat({ title, messages: [] });
     await newChat.save();
 
     socket.currentChatId = newChat._id.toString();
@@ -79,12 +84,14 @@ io.on('connection', (socket) => {
       chatStarted = true;
 
       socket.emit('chatCreated', chat);
+
       const messages = await Message.find({ chatId }).sort({ createdAt: 1 });
       socket.emit('previousMessages', messages);
     } catch (error) {
       console.error('❌ Error cargando chat:', error);
     }
-  });
+});
+
 
   // Crear nuevo chat manualmente desde frontend
   socket.on('newChat', async (data) => {
@@ -94,6 +101,7 @@ io.on('connection', (socket) => {
 
   // Enviar nuevo mensaje
   socket.on('newMessage', async (data) => {
+    console.log('📨 Mensaje recibido en servidor:', data);
     try {
       const { from, text } = data;
       const chatId = data.chatId || socket.currentChatId;
@@ -116,8 +124,13 @@ io.on('connection', (socket) => {
       socket.emit('message', userMessage);
       socket.broadcast.emit('message', userMessage);
 
+      // Respuesta automática del bot
       if (from === 'user') {
-        const botMessage = new Message({ chatId, from: 'bot', text: 'Hola 👋' });
+        const botMessage = new Message({
+          chatId,
+          from: 'bot',
+          text: 'Hola 👋 ¿En qué te puedo ayudar?',
+        });
         await botMessage.save();
 
         await Chat.findByIdAndUpdate(chatId, {

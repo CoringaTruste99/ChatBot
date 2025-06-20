@@ -1,37 +1,15 @@
 const socket = io();
-let currentChatId = localStorage.getItem('chatId');
-
-socket.on('connect', () => {
-  console.log('✅ Socket conectado con id:', socket.id);
-
-  if (currentChatId) {
-    socket.emit('loadChat', currentChatId);
-  } else {
-    socket.emit('newChat');
-  }
-});
-
-socket.on('chatCreated', (chat) => {
-  currentChatId = chat._id;
-  localStorage.setItem('chatId', currentChatId); // Para futuras visitas
-  chatContainer.innerHTML = '';
-});
-
-socket.on('previousMessages', (messages) => {
-  messages.forEach(mostrarMensaje);
-});
-
 const chatContainer = document.getElementById('chat');
 const formContainer = document.getElementById('form');
 const inputMessage = document.getElementById('inputMessage');
 
-// 🟡 Obtener chatId desde la URL
+let currentChatId = null;
+
 function getChatIdFromURL() {
   const params = new URLSearchParams(window.location.search);
   return params.get('chatId');
 }
 
-// 🔄 Mostrar mensajes en la UI
 function mostrarMensaje(m) {
   const div = document.createElement('div');
   div.className = m.from === 'user' ? 'flex justify-end my-2' : 'flex justify-start my-2';
@@ -46,38 +24,61 @@ function mostrarMensaje(m) {
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-// 📦 Cuando se recibe un nuevo chat (nuevo o cargado)
 socket.on('chatCreated', (chat) => {
-  currentChatId = chat._id;
+  console.log('chatCreated event:', chat);
+  currentChatId = chat._id || chat.id;
+  console.log('currentChatId set to:', currentChatId);
+  localStorage.setItem('chatId', currentChatId);
   chatContainer.innerHTML = '';
 });
 
-// 📜 Cargar historial de mensajes
 socket.on('previousMessages', (messages) => {
-  console.log('📜 Historial recibido:', messages.length, 'mensajes');
+  chatContainer.innerHTML = '';
+  console.log('previousMessages event:', messages);
   messages.forEach(mostrarMensaje);
 });
 
-// 💬 Mensaje nuevo recibido
 socket.on('message', (message) => {
-  console.log('📥 Mensaje recibido:', message);
+  if (message.chatId && message.chatId !== currentChatId) return; // Solo mensajes del chat activo
+  console.log('message event:', message);
   mostrarMensaje(message);
 });
 
-// 📤 Enviar mensaje nuevo
 formContainer.addEventListener('submit', (e) => {
   e.preventDefault();
   const text = inputMessage.value.trim();
-  if (!text || !currentChatId) return;
-
+  console.log('Intentando enviar mensaje:', text, 'con chatId:', currentChatId);
+  
+  if (!text) {
+    console.warn('No hay texto para enviar');
+    return;
+  }
+  
+  if (!currentChatId) {
+    console.warn('No hay chat seleccionado o cargado');
+    return;
+  }
+  
   socket.emit('newMessage', { from: 'user', text, chatId: currentChatId });
   inputMessage.value = '';
+  inputMessage.focus();
 });
 
-// 🔄 Al iniciar, cargar chat por ID o crear uno nuevo
-const existingChatId = getChatIdFromURL();
-if (existingChatId) {
-  socket.emit('loadChat', existingChatId);
-} else {
-  socket.emit('newChat');
-}
+socket.on('connect', () => {
+  console.log('Socket conectado con id:', socket.id);
+  const urlChatId = getChatIdFromURL();
+  const storedChatId = localStorage.getItem('chatId');
+
+  if (urlChatId) {
+    console.log('Cargando chat desde URL:', urlChatId);
+    currentChatId = urlChatId;
+    socket.emit('loadChat', urlChatId);
+  } else if (storedChatId) {
+    console.log('Cargando chat desde localStorage:', storedChatId);
+    currentChatId = storedChatId;
+    socket.emit('loadChat', storedChatId);
+  } else {
+    console.log('Creando nuevo chat...');
+    socket.emit('newChat', { title: 'Chat nuevo' });
+  }
+});
