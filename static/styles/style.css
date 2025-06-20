@@ -1,0 +1,71 @@
+/* Scrollbar general */
+#chat::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track (fondo de la barra) */
+#chat::-webkit-scrollbar-track {
+  background: #1f2937; /* gris oscuro (gray-800) */
+  border-radius: 4px;
+}
+
+/* Thumb (la parte que se mueve) */
+#chat::-webkit-scrollbar-thumb {
+  background: #4b5563; /* gris medio (gray-600) */
+  border-radius: 4px;
+}
+
+/* Hover al pasar mouse */
+#chat::-webkit-scrollbar-thumb:hover {
+  background: #6b7280; /* gris más claro (gray-500) */
+}
+
+    /* Degradado diagonal en el área de chat */
+#chat {
+  background: linear-gradient(
+    135deg,
+    #1f2937 0%,  /* gray-800 */
+    #4b5563 100%  /* gray-600 */
+  );
+}
+
+/* Scrollbar general */
+#historial::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track (fondo de la barra) */
+#historial::-webkit-scrollbar-track {
+  background: #1f2937; /* gris oscuro (gray-800) */
+  border-radius: 4px;
+}
+
+/* Thumb (la parte que se mueve) */
+#historial::-webkit-scrollbar-thumb {
+  background: #4b5563; /* gris medio (gray-600) */
+  border-radius: 4px;
+}
+
+/* Hover al pasar mouse */
+#historial::-webkit-scrollbar-thumb:hover {
+  background: #6b7280; /* gris más claro (gray-500) */
+}
+
+/* Degradado diagonal en el área de historial */
+#historial {
+  background: linear-gradient(
+    135deg,
+    #1f2937 0%,  /* gray-800 */
+    #4b5563 100%  /* gray-600 */
+  );
+}
+
+@keyframes flash {
+  0% { background-color: #d1d5db; } /* gray-300 */
+  50% { background-color: #f3f4f6; } /* gray-100 */
+  100% { background-color: #d1d5db; } /* vuelve al original */
+}
+
+.flash {
+  animation: flash 0.6s ease-in-out;
+}

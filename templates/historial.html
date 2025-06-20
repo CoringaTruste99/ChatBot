@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Historial de Conversaciones - PerfectPawls</title>
+  <link rel="icon" href="/images/favicon.png" type="image/x-icon" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/styles/style.css" />
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
+
+  <!-- Navbar container -->
+  <div id="navbar-container"></div>
+
+  <main class="flex-1 p-4 flex justify-center">
+    <div class="w-full max-w-2xl bg-gray-800 shadow rounded p-4 space-y-3 overflow-y-auto h-[500px]" id="historial">
+      <!-- Aquí se listarán los chats -->
+    </div>
+  </main>
+
+  <script src="/scripts/load-navbar.js"></script>
+  <script src="/scripts/historial-load.js"></script>
+</body>
+</html>

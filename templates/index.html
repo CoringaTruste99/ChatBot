@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChatBot servicio al cliente - PerfectPawls</title>
+  <link rel="icon" href="/images/favicon.png" type="image/x-icon" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/styles/style.css" />
+</head>
+<body class="bg-gray-900 flex flex-col h-screen overflow-hidden"> <!-- <-- evita scroll general -->
+
+  <!-- Navbar container -->
+  <div id="navbar-container" class="mb-2"></div>
+
+  <!-- Caja del chat -->
+  <div class="bg-gray-800 shadow-lg rounded-lg max-w-4xl w-full flex flex-col mx-auto flex-1 overflow-hidden">
+    
+    <!-- Área de mensajes con scroll -->
+    <div id="chat" class="flex-1 overflow-y-auto p-6 space-y-3 text-gray-300 rounded-t-lg">
+      <!-- Mensajes aquí -->
+    </div>
+
+    <!-- Botón limpiar -->
+    <div class="flex justify-end p-3 bg-gray-800 border-t border-gray-700">
+      <button id="clearChat" title="Limpiar chat" class="text-gray-400 hover:text-red-500 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Formulario -->
+    <form id="form" class="flex border-t border-gray-700 p-4 bg-gray-800 rounded-b-lg">
+      <input
+        type="text"
+        id="inputMessage"
+        placeholder="Escribe tu mensaje..."
+        class="flex-grow border border-gray-700 rounded-l px-4 py-2 bg-gray-700 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-600"
+        autocomplete="off"
+      />
+      <button
+        type="submit"
+        class="bg-gray-600 text-gray-200 px-4 py-2 rounded-r hover:bg-gray-500 transition-colors"
+      >
+        Enviar
+      </button>
+    </form>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/scripts/chat-socket.js"></script>
+  <script src="/scripts/clear-chat.js"></script>
+  <script src="/scripts/load-navbar.js"></script>
+</body>
+</html>
